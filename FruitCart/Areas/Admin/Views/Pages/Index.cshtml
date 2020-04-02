@@ -1,0 +1,89 @@
+﻿@model IEnumerable<FruitCart.Models.ViewModels.Pages.PageVM>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Add New Page", "AddPage")
+</p>
+@if (!Model.Any())
+{
+    <h2>There are no pages</h2>
+} 
+else
+{
+    <table class="table sorting" id="pages" >
+        <tr class="Home">
+            <th>
+                Title
+            </th>
+            <th>
+                Slug
+            </th>
+
+            <th>
+                Sidebar
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr id="id_@item.Id" class="@item.Slug">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Slug)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.HasSideBar)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditPage", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "PageDetails", new { id = item.Id }) |
+
+                    @if (item.Slug != "Home")
+                    {
+                        @Html.ActionLink("Delete", "DeletePage", new { id = item.Id })
+                    }
+                </td>
+            </tr>
+        }
+
+
+    </table>
+}
+
+@section Scripts{
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <script>
+        $(function () {
+            $("a.delete").click(function () {
+
+                if (!confirm("Confirm Page Deletion")) return false;
+            });
+
+
+        });
+
+        $("table#pages tbody").sortable({
+            items: "tr:not(.Home)",
+            placeholder: "ui-state-highlight",
+            update: function () {
+                var ids = $("table#pages tbody").sortable("seralize");
+                var url = "/Admin/Pages/ReorderPages";
+                $.post(url, ids, function (data) {
+
+                });
+            }
+
+
+        });
+
+    </script>
+}
